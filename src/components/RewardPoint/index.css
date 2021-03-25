@@ -1,0 +1,68 @@
+.flex_container {
+    display: flex;
+}
+
+.block1, .block2, .block3 {
+    flex: 1 0 auto;
+    padding: 10px;
+    margin: 20px 20px;
+    height: 50px;
+}
+th, td {
+    border-bottom: 1px solid #ddd;
+}
+tr:hover {background-color: #f5f5f5;}
+
+table {
+    border-collapse: collapse;
+}
+tr{
+    height: 50px;
+}
+btn{
+    text-decoration: none !important;
+}
+.title{
+    margin-top: 25px;
+    border-bottom: 1px solid #c6c6c6;
+    margin-bottom: 25px;
+    padding-bottom: 10px;
+    margin-left: 20px;
+    color: blue;
+    font-size: 20px;
+}
+
+.point1{
+    background: red;
+    height: 50px;
+    text-align: center;
+    padding: 15px;
+}
+.point2{
+    background: aqua;
+    height: 50px;
+    text-align: center;
+    padding: 15px;
+}
+.point3{
+    background: blue;
+    height: 50px;
+    text-align: center;
+    padding: 15px;
+}
+.label{
+    margin-top: 10px;
+    text-align: center;
+    line-height: 10px;
+}
+.block1 {
+    text-align: center;
+}
+
+.block2 {
+    text-align: center;
+}
+
+.block3 {
+    text-align: center;
+}
