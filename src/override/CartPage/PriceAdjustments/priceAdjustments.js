@@ -12,9 +12,10 @@ import ShippingMethods from '@magento/venia-ui/lib/components/CartPage/PriceAdju
 
 import defaultClasses from './priceAdjustments.css';
 import {useCartContext} from "@magento/peregrine/lib/context/cart";
-import {useMutation, useQuery} from "@apollo/client";
-import {GET_RULE_APPLY, SPEND_REWARD_POINT} from "../PriceSummary/rewardpoint.gql";
+import {useLazyQuery, useMutation, useQuery} from "@apollo/client";
+import {GET_PRICE_SUMMARY, GET_RULE_APPLY, SPEND_REWARD_POINT} from "../PriceSummary/rewardpoint.gql";
 import {GET_CUSTOMER_REWARD_POINTS} from "../../../components/RewardPoint/customerRewardPoints.gql";
+import Button from "@magento/venia-ui/lib/components/Button";
 
 
 /**
@@ -37,10 +38,18 @@ const PriceAdjustments = props => {
     const classes = mergeClasses(defaultClasses, props.classes);
 
     const { setIsCartUpdating } = props;
+
     const [{ cartId }] = useCartContext();
+    const [loadingPriceData, { error, loading, data }] = useLazyQuery(GET_PRICE_SUMMARY, {fetchPolicy: 'cache-and-network',
+        nextFetchPolicy: 'cache-first',
+        skip: !cartId,
+        variables: {
+            cartId
+        }
+    })
     const [rewardPoint, setRewardPoint] = useState(0)
     const [spendRewardPoint, {data: spendRewardPointData}] = useMutation(SPEND_REWARD_POINT, {onCompleted(){
-            window.location.reload()
+            loadingPriceData();
         }});
     const {
         data: rewardPointCustomerData
@@ -58,6 +67,14 @@ const PriceAdjustments = props => {
     const [selectedValue, setSelectedValue] = useState('rate');
     const handleChange = e => {
         setSelectedValue(e.value);
+        if(e.value == 'no_apply'){
+            spendRewardPoint({variables: {
+                    cart_id: cartId,
+                    points: 0,
+                    rule_id: 'no_apply',
+                    address_information: {}
+                }})
+        }
         if(e.value == '2'){
             spendRewardPoint({variables: {
                     cart_id: cartId,
@@ -67,7 +84,7 @@ const PriceAdjustments = props => {
                 }})
         }
     }
-    if(!applyRuleData || !rewardPointCustomerData){
+    if(!applyRuleData || !rewardPointCustomerData || ! applyRuleData.data){
         return ''
     }
     const labelRule = [];
@@ -141,37 +158,32 @@ const PriceAdjustments = props => {
                         </div>
                         <input type='range'  className={classes.slider} min={minPoint} max={maxPoint} step={stepPoint}
                                value={rewardPoint || rewardPointData.pointSpent}
-                               initialValue={0}
                                id='myRange'
                                onChange={(e) => {
                                    setRewardPoint(e.target.value)
                                }}
-                               onMouseUp={(e) => {
-                                   spendRewardPoint({variables: {
-                                           cart_id: cartId,
-                                           points: e.target.value,
-                                           rule_id: 'rate',
-                                           address_information: {}
-                                       }})
-                               }}
                         />
-                        <div style={{marginTop: '2rem'}}>
+                        <div style={{marginTop: '2rem', marginBottom: '2rem'}}>
                             <span>You are using </span>
                             <input
                                 value={rewardPoint || rewardPointData.pointSpent}
                                 onChange={(e) => {
                                     setRewardPoint(e.target.value)
                                 }}
-                                onBlur={(e) => {
-                                    spendRewardPoint({variables: {
-                                            cart_id: cartId,
-                                            points: e.target.value,
-                                            rule_id: 'rate',
-                                            address_information: {}
-                                        }})
-                                }}
                             />
                         </div>
+                        <Button
+                            priority='high'
+                            onClick={() => {
+                                spendRewardPoint({variables: {
+                                        cart_id: cartId,
+                                        points: rewardPoint,
+                                        rule_id: 'rate',
+                                        address_information: {}
+                                    }})
+                            }}>
+                            Apply
+                        </Button>
 
                     </Section>
                 </Accordion>

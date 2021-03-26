@@ -1,4 +1,5 @@
 import { gql } from '@apollo/client';
+import {PriceSummaryFragment} from "./priceSummaryFragment";
 
 export const GET_CUSTOMER_REWARD_POINTS = gql`
     query getCustomerRewardPoints {
@@ -50,5 +51,14 @@ export const SPEND_REWARD_POINT = gql`
             value
         }
     }
+`;
+ export const GET_PRICE_SUMMARY = gql`
+    query getPriceSummary($cartId: String!) {
+        cart(cart_id: $cartId) {
+            id
+            ...PriceSummaryFragment
+        }
+    }
+    ${PriceSummaryFragment}
 `;
 
