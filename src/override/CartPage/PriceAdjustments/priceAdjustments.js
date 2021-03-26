@@ -101,7 +101,7 @@ const PriceAdjustments = props => {
                 <h2><strong>You have {balance} points</strong></h2>
             </div>
             <input type='range'  className={classes.slider} min={minPoint} max={maxPoint} step={stepPoint}
-                   value={rewardPoint || rewardPointData.pointSpent}
+                   value={rewardPoint || rewardPointRuleData.pointSpent}
                    id='myRange'
                    onChange={(e) => {
                        setRewardPoint(e.target.value)
@@ -110,7 +110,7 @@ const PriceAdjustments = props => {
             <div style={{marginTop: '2rem', marginBottom: '2rem'}}>
                 <span>You are using </span>
                 <input
-                    value={rewardPoint || rewardPointData.pointSpent}
+                    value={rewardPoint || rewardPointRuleData.pointSpent}
                     onChange={(e) => {
                         setRewardPoint(e.target.value)
                     }}
