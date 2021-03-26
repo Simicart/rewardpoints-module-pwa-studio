@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {gql, useMutation, useQuery} from '@apollo/client';
 import { Price } from '@magento/peregrine';
-import { usePriceSummary } from './usePriceSummary';
+import {usePriceSummary} from "../../../talons/usePriceSummary";
 import Button from '@magento/venia-ui/lib/components/Button';
 import { mergeClasses } from '@magento/venia-ui/lib/classify';
 import defaultClasses from '@magento/venia-ui/lib/components/CartPage/PriceSummary/priceSummary.css';
@@ -42,12 +42,9 @@ const PriceSummary = props => {
     const { isUpdating } = props;
     const [{ cartId }] = useCartContext();
     const classes = mergeClasses(defaultClasses, props.classes);
-    const talonProps = usePriceSummary({
-        queries: {
+    const talonProps = usePriceSummary({queries: {
             getPriceSummary: GET_PRICE_SUMMARY
-        }
-    });
-
+        }});
     const {
         handleProceedToCheckout,
         hasError,
@@ -71,6 +68,7 @@ const PriceSummary = props => {
     }
 
     const { subtotal, total, discounts, giftCards, taxes, shipping, priceData } = flatData;
+    console.log(flatData)
     if(priceData.length >1) {
         mpRewardDiscount = priceData[0];
         mpRewardSpent = priceData[1];
@@ -95,227 +93,88 @@ const PriceSummary = props => {
             </Button>
         </div>
     ) : null;
-    if((!mpRewardDiscount && !mpRewardSpent) && !mpRewardEarn){
-        return (
-            <div className={classes.root}>
-                <div className={classes.lineItems}>
-                    <span className={classes.lineItemLabel}>{'Subtotal'}</span>
-                    <span className={priceClass}>
-                    <Price
-                        value={subtotal.value}
-                        currencyCode={subtotal.currency}
-                    />
-                </span>
-                    <DiscountSummary
-                        classes={{
-                            lineItemLabel: classes.lineItemLabel,
-                            price: priceClass
-                        }}
-                        data={discounts}
-                    />
-                    <GiftCardSummary
-                        classes={{
-                            lineItemLabel: classes.lineItemLabel,
-                            price: priceClass
-                        }}
-                        data={giftCards}
-                    />
-                    <TaxSummary
-                        classes={{
-                            lineItemLabel: classes.lineItemLabel,
-                            price: priceClass
-                        }}
-                        data={taxes}
-                        isCheckout={isCheckout}
-                    />
-                    <ShippingSummary
-                        classes={{
-                            lineItemLabel: classes.lineItemLabel,
-                            price: priceClass
-                        }}
-                        data={shipping}
-                        isCheckout={isCheckout}
-                    />
-                    <span className={classes.totalLabel}>
-                    {isCheckout ? 'Total' : 'Estimated Total'}
-                </span>
-                    <span className={totalPriceClass}>
-                    <Price value={total.value} currencyCode={total.currency} />
-                </span>
-                </div>
-                {proceedToCheckoutButton}
-            </div>
-        );
-    }
-    else if(mpRewardEarn && (!mpRewardSpent && !mpRewardSpent)){
-        return (
-            <div className={classes.root}>
-                <div className={classes.lineItems}>
-                    <span className={classes.lineItemLabel}>{mpRewardEarn.title}</span>
-                    <div className={priceClass}><strong>{mpRewardEarn.value} points</strong></div>
-                    <span className={classes.lineItemLabel}>{'Subtotal'}</span>
-                    <span className={priceClass}>
-                    <Price
-                        value={subtotal.value}
-                        currencyCode={subtotal.currency}
-                    />
-                </span>
-                    <DiscountSummary
-                        classes={{
-                            lineItemLabel: classes.lineItemLabel,
-                            price: priceClass
-                        }}
-                        data={discounts}
-                    />
-                    <GiftCardSummary
-                        classes={{
-                            lineItemLabel: classes.lineItemLabel,
-                            price: priceClass
-                        }}
-                        data={giftCards}
-                    />
-                    <TaxSummary
-                        classes={{
-                            lineItemLabel: classes.lineItemLabel,
-                            price: priceClass
-                        }}
-                        data={taxes}
-                        isCheckout={isCheckout}
-                    />
-                    <ShippingSummary
-                        classes={{
-                            lineItemLabel: classes.lineItemLabel,
-                            price: priceClass
-                        }}
-                        data={shipping}
-                        isCheckout={isCheckout}
-                    />
-                    <span className={classes.totalLabel}>
-                    {isCheckout ? 'Total' : 'Estimated Total'}
-                </span>
-                    <span className={totalPriceClass}>
-                    <Price value={total.value} currencyCode={total.currency} />
-                </span>
-                </div>
-                {proceedToCheckoutButton}
-            </div>
-        );
-    }
-    else if((mpRewardDiscount && mpRewardSpent) && !mpRewardEarn){
-        return (
-            <div className={classes.root}>
-                <div className={classes.lineItems}>
-                    <span className={classes.lineItemLabel}>{'Subtotal'}</span>
-                    <span className={priceClass}>
-                    <Price
-                        value={subtotal.value}
-                        currencyCode={subtotal.currency}
-                    />
-                    </span>
-                    <DiscountSummary
-                        classes={{
-                            lineItemLabel: classes.lineItemLabel,
-                            price: priceClass
-                        }}
-                        data={discounts}
-                    />
-                    <GiftCardSummary
-                        classes={{
-                            lineItemLabel: classes.lineItemLabel,
-                            price: priceClass
-                        }}
-                        data={giftCards}
-                    />
-                    <TaxSummary
-                        classes={{
-                            lineItemLabel: classes.lineItemLabel,
-                            price: priceClass
-                        }}
-                        data={taxes}
-                        isCheckout={isCheckout}
-                    />
-                    <ShippingSummary
-                        classes={{
-                            lineItemLabel: classes.lineItemLabel,
-                            price: priceClass
-                        }}
-                        data={shipping}
-                        isCheckout={isCheckout}
-                    />
-                    <span className={classes.totalLabel}>
-                    {isCheckout ? 'Total' : 'Estimated Total'}
-                </span>
-                    <span className={totalPriceClass}>
-                    <Price value={total.value} currencyCode={total.currency} />
-                </span>
-                </div>
-                {proceedToCheckoutButton}
-            </div>
-        );
-    }
-    else{
-        return (
-            <div className={classes.root}>
-                <div className={classes.lineItems}>
-                    <span className={classes.lineItemLabel}>{mpRewardEarn.title}</span>
-                    <div className={priceClass}><strong>{mpRewardEarn.value} points</strong></div>
-                    <span className={classes.lineItemLabel}>{mpRewardSpent.title}</span>
-                    <div className={priceClass}><strong>{mpRewardSpent.value} points</strong></div>
-                    <span className={classes.lineItemLabel}>{'Subtotal'}</span>
-                    <span className={priceClass}>
-                    <Price
-                        value={subtotal.value}
-                        currencyCode={subtotal.currency}
-                    />
-                    </span>
-                    <span className={classes.lineItemLabel}>{mpRewardDiscount.title}</span>
-                    <span className={priceClass}>
+
+    const MpRewardEarnedTitleView = (mpRewardEarn ?
+        <span className={classes.lineItemLabel}>{mpRewardEarn.title}</span>
+    : null);
+    const MpRewardEarnedValueView = (mpRewardEarn ?
+            <div className={priceClass}><strong>{mpRewardEarn.value} points</strong></div>
+            : null
+    );
+    const MpRewardSpentTitleView = (mpRewardSpent ?
+        <span className={classes.lineItemLabel}>{mpRewardSpent.title}</span>
+        : null);
+    const MpRewardSpentValueView = (mpRewardSpent ?
+            <div className={priceClass}><strong>{mpRewardSpent.value} points</strong></div>
+            : null
+    );
+    const MpRewardDiscountTitleView = (mpRewardDiscount ?
+        <span className={classes.lineItemLabel}>{mpRewardDiscount.title}</span>
+        : null);
+    const MpRewardDiscountValueView = (mpRewardDiscount ?
+            <span className={priceClass}>
                     <Price
                         value={mpRewardDiscount.value}
                         currencyCode={subtotal.currency}
                     />
+                    </span>            : null
+    );
+    return (
+        <div className={classes.root}>
+            <div className={classes.lineItems}>
+                {MpRewardEarnedTitleView}
+                {MpRewardEarnedValueView}
+                {MpRewardSpentTitleView}
+                {MpRewardSpentValueView}
+                <span className={classes.lineItemLabel}>{'Subtotal'}</span>
+                <span className={priceClass}>
+                    <Price
+                        value={subtotal.value}
+                        currencyCode={subtotal.currency}
+                    />
                     </span>
-                    <DiscountSummary
-                        classes={{
-                            lineItemLabel: classes.lineItemLabel,
-                            price: priceClass
-                        }}
-                        data={discounts}
-                    />
-                    <GiftCardSummary
-                        classes={{
-                            lineItemLabel: classes.lineItemLabel,
-                            price: priceClass
-                        }}
-                        data={giftCards}
-                    />
-                    <TaxSummary
-                        classes={{
-                            lineItemLabel: classes.lineItemLabel,
-                            price: priceClass
-                        }}
-                        data={taxes}
-                        isCheckout={isCheckout}
-                    />
-                    <ShippingSummary
-                        classes={{
-                            lineItemLabel: classes.lineItemLabel,
-                            price: priceClass
-                        }}
-                        data={shipping}
-                        isCheckout={isCheckout}
-                    />
-                    <span className={classes.totalLabel}>
+                {MpRewardDiscountTitleView}
+                {MpRewardDiscountValueView}
+                <DiscountSummary
+                    classes={{
+                        lineItemLabel: classes.lineItemLabel,
+                        price: priceClass
+                    }}
+                    data={discounts}
+                />
+                <GiftCardSummary
+                    classes={{
+                        lineItemLabel: classes.lineItemLabel,
+                        price: priceClass
+                    }}
+                    data={giftCards}
+                />
+                <TaxSummary
+                    classes={{
+                        lineItemLabel: classes.lineItemLabel,
+                        price: priceClass
+                    }}
+                    data={taxes}
+                    isCheckout={isCheckout}
+                />
+                <ShippingSummary
+                    classes={{
+                        lineItemLabel: classes.lineItemLabel,
+                        price: priceClass
+                    }}
+                    data={shipping}
+                    isCheckout={isCheckout}
+                />
+                <span className={classes.totalLabel}>
                     {isCheckout ? 'Total' : 'Estimated Total'}
                 </span>
-                    <span className={totalPriceClass}>
+                <span className={totalPriceClass}>
                     <Price value={total.value} currencyCode={total.currency} />
                 </span>
-                </div>
-                {proceedToCheckoutButton}
             </div>
-        );
-    }
+            {proceedToCheckoutButton}
+        </div>
+    );
 };
 
 export default PriceSummary;

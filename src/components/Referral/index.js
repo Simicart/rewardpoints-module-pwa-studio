@@ -1,30 +1,24 @@
 import React from "react";
 import {mergeClasses} from "@magento/venia-ui/lib/classify";
 import {shape, string} from "prop-types";
-import {GET_CUSTOMER_REFERRAL} from "./customerReferral.gql";
-
 import defaultClasses from "./index.css";
-import {useQuery} from "@apollo/client";
 import TextInput from "@magento/venia-ui/lib/components/TextInput";
-import {isRequired} from "@magento/venia-ui/lib/util/formValidators";
 import Field from "@magento/venia-ui/lib/components/Field";
+import {useGetRewardPointData} from "../../talons/useGetRewardPointData";
 import textArea from "@magento/venia-ui/lib/components/TextArea";
 import Button from "@magento/venia-ui/lib/components/Button";
 
-const Page1 = props => {
+const RewardReferral = props => {
     const classes = mergeClasses(defaultClasses, props.classes);
-
-    const {
-        data: referralData
-    } = useQuery(GET_CUSTOMER_REFERRAL);
-
-    if(!referralData){
+    const {rewardPointData} = useGetRewardPointData();
+    console.log(rewardPointData)
+    if(!rewardPointData){
         return '';
     }
 
-    const email = referralData.customer.email
+    const email = rewardPointData.customer.email
 
-    const referCode = referralData.customer.mp_reward.refer_code
+    const referCode = rewardPointData.customer.mp_reward.refer_code
 
     const baseUrl = window.location.origin
 
@@ -88,10 +82,10 @@ const Page1 = props => {
         );
 }
 
-Page1.propTypes = {
+RewardReferral.propTypes = {
     classes: shape({root: string})
 };
 
-Page1.defaultProps = {};
+RewardReferral.defaultProps = {};
 
-export default Page1;
+export default RewardReferral;

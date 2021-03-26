@@ -1,23 +1,20 @@
 import React, {useState} from "react";
 import {mergeClasses} from "@magento/venia-ui/lib/classify";
 import {shape, string} from "prop-types";
-import {GET_CUSTOMER_TRANSACTION} from "./customerTransaction.gql";
-
 import defaultClasses from "./index.css";
 import {useQuery} from "@apollo/client";
 import {Title} from "@magento/venia-ui/lib/components/Head";
 import {useIntl} from "react-intl";
+import {useGetRewardPointData} from "../../talons/useGetRewardPointData";
 import moment from "moment";
 import {Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow } from '@material-ui/core';
 
 
 const Transaction = props => {
     const classes = mergeClasses(defaultClasses, props.classes);
-
     const {
-        data: rewardTransaction
-    } = useQuery(GET_CUSTOMER_TRANSACTION, {fetchPolicy:'no-cache', variables: {pageSize: 100}});
-
+        rewardTransactionData
+    } = useGetRewardPointData();
     const { formatMessage } = useIntl();
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -31,21 +28,15 @@ const Transaction = props => {
         setRowsPerPage(+event.target.value);
         setPage(0);
     };
-
-    if (!rewardTransaction){
+    if (!rewardTransactionData){
         return ''
     }
-
-    const transactions = rewardTransaction.customer.mp_reward.transactions.items
-    console.log(transactions)
-
+    const transactions = rewardTransactionData.customer.mp_reward.transactions.items
     const PAGE_TITLE = formatMessage({
-        id: 'customerRewardPoints.customerRewardPointsText',
+        id: 'rewardPointTransaction',
         defaultMessage: 'Reward Transaction'
     });
     const title = `${PAGE_TITLE} - ${STORE_NAME}`;
-
-    console.log(rewardTransaction)
     return (
             <section>
                 <Title>{title}</Title>

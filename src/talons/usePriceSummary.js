@@ -1,9 +1,8 @@
-import { useCallback } from 'react';
+import {useCallback, useState} from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
-import { useQuery } from '@apollo/client';
+import {useLazyQuery, useMutation, useQuery} from '@apollo/client';
 import { useCartContext } from '@magento/peregrine/lib/context/cart';
-import {GET_RULE_APPLY} from "./rewardpoint.gql";
-
+import {GET_RULE_APPLY, GET_PRICE_SUMMARY, SPEND_REWARD_POINT} from "./rewardPoints.gql";
 /**
  * @ignore
  *
@@ -45,17 +44,32 @@ const flattenData = data => {
  * import { usePriceSummary } from '@magento/peregrine/lib/talons/CartPage/PriceSummary/usePriceSummary';
  */
 export const usePriceSummary = props => {
-    const {
-        queries: { getPriceSummary }
-    } = props;
-
     const [{ cartId }] = useCartContext();
     const history = useHistory();
     // We don't want to display "Estimated" or the "Proceed" button in checkout.
     const match = useRouteMatch('/checkout');
     const isCheckout = !!match;
 
-    const { error, loading, data } = useQuery(getPriceSummary, {
+    const { error, loading, data } = useQuery(GET_PRICE_SUMMARY, {
+        fetchPolicy: 'cache-and-network',
+        nextFetchPolicy: 'cache-first',
+        skip: !cartId,
+        variables: {
+            cartId
+        }
+    });
+    const [loadingPriceData] = useLazyQuery(GET_PRICE_SUMMARY, {
+        fetchPolicy: 'cache-and-network',
+        nextFetchPolicy: 'cache-first',
+        skip: !cartId,
+        variables: {
+            cartId
+        }
+    })
+    const [spendRewardPoint, {data: spendRewardPointData}] = useMutation(SPEND_REWARD_POINT, {onCompleted(){
+            loadingPriceData();
+        }});
+    const  applyRuleData  = useQuery(GET_RULE_APPLY, {
         fetchPolicy: 'cache-and-network',
         nextFetchPolicy: 'cache-first',
         skip: !cartId,
@@ -67,8 +81,9 @@ export const usePriceSummary = props => {
     const handleProceedToCheckout = useCallback(() => {
         history.push('/checkout');
     }, [history]);
-
     return {
+        spendRewardPoint,
+        applyRuleData,
         handleProceedToCheckout,
         hasError: !!error,
         hasItems: data && !!data.cart.items.length,
