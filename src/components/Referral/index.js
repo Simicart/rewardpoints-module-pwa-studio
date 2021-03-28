@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import {mergeClasses} from "@magento/venia-ui/lib/classify";
 import {shape, string} from "prop-types";
 import defaultClasses from "./index.css";
@@ -7,10 +7,14 @@ import Field from "@magento/venia-ui/lib/components/Field";
 import {useGetRewardPointData} from "../../talons/useGetRewardPointData";
 import textArea from "@magento/venia-ui/lib/components/TextArea";
 import Button from "@magento/venia-ui/lib/components/Button";
+import Select from "react-select";
 
 const RewardReferral = props => {
     const classes = mergeClasses(defaultClasses, props.classes);
-    const {rewardPointData} = useGetRewardPointData();
+    const {rewardPointData, mpRewardInvite} = useGetRewardPointData();
+    const [sendFrom, setSendFrom] = useState('');
+    const [emails, setEmails] = useState("");
+    const [message, setMessage] = useState("");
     console.log(rewardPointData)
     if(!rewardPointData){
         return '';
@@ -21,10 +25,16 @@ const RewardReferral = props => {
     const referCode = rewardPointData.customer.mp_reward.refer_code
 
     const baseUrl = window.location.origin
+    const handleChange = e =>{
+        setSendFrom(e.value);
+    }
 
     const referUrl = baseUrl + "/?code=" + referCode
-
-    console.log(referUrl)
+    const options = [
+        { value: 'store', label: 'Store' },
+        { value: 'email_address', label: 'Your Email Address' },
+    ];
+    console.log(sendFrom)
 
         return (
             <section>
@@ -60,13 +70,17 @@ const RewardReferral = props => {
                         <div style={{marginTop: '2rem', borderBottom: '1px solid #c6c6c6'}}><h2 style={{color: 'blue'}}>Send Invitations</h2></div>
                         <div style={{marginTop: '3rem'}}>
                             <Field label="Send From">
-                                <TextInput
-                                    initialValue={email}
-                                    disabled={true}
+                                <Select
+                                    options={options}
+                                    onChange={handleChange}
                                 />
                             </Field>
                             <Field label="Invite your friends by entering their email addresses below">
-                                <textArea/>
+                                <textArea
+                                    onChange={(e) => {
+                                        setEmails(e.target.value)
+                                    }}
+                                />
                             </Field>
                             <div style={{marginTop: '1rem'}}>
                                 <span>To reduce the chance that your message is marked as spam, please follow this format: "Contact name"</span>
@@ -74,14 +88,25 @@ const RewardReferral = props => {
                                 <br />
                                 <span>Example contact list:"John" , peter@icloud.com,jennifer@google.com, hello@yahoo.com, mark@gmail.com</span>
                             </div>
-                            <Button priority='high'>Send Now</Button>
+                            <Field label="Message">
+                                <input onChange={(e) => {
+                                    setMessage(e.target.value)
+                                }}/>
+                            </Field>
+                            <Button
+                                priority='high'
+                                onClick={()=>{mpRewardInvite({variables: {
+                                        send_from: sendFrom,
+                                        emails: emails,
+                                        message: message
+                                    }})}}
+                            >Send Now</Button>
                         </div>
                     </div>
                 </div>
             </section>
         );
 }
-
 RewardReferral.propTypes = {
     classes: shape({root: string})
 };

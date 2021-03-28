@@ -134,3 +134,16 @@ export const SPEND_REWARD_POINT = gql`
         }
     }
 `;
+export const SEND_REFER_EMAIL = gql`
+    mutation(
+         $send_from: String!
+         $emails: String!
+         $message: String!
+    ) {
+        MpRewardInvite(
+          send_from: $send_from
+          emails: $emails
+          message: $message
+        )
+    }
+`;

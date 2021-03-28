@@ -36,7 +36,10 @@ const PriceAdjustments = props => {
     const classes = mergeClasses(defaultClasses, props.classes);
     let SpendingPoint;
     const { setIsCartUpdating } = props;
-    const [selectedValue, setSelectedValue] = useState('rate');
+    const [selectedValue, setSelectedValue] = useState(localStorage.getItem('myValueInLocalStorage') || '');
+    React.useEffect(() => {
+        localStorage.setItem('myValueInLocalStorage', selectedValue);
+    }, [selectedValue]);
     const [{ cartId }] = useCartContext();
     const [rewardPoint, setRewardPoint] = useState(0)
     const {
@@ -74,7 +77,7 @@ const PriceAdjustments = props => {
     const rewardPointRuleData = applyRuleData.data.MpRewardShoppingCartSpendingRules;
     const rules = rewardPointRuleData.rules;
     const rewardPointOption = rules.map((rule)=>{
-        if(rule.id == rewardPointRuleData.ruleApplied){
+        if(rule.id == selectedValue){
             minPoint = rule.min;
             maxPoint = rule.max;
             stepPoint = rule.step;
@@ -84,6 +87,7 @@ const PriceAdjustments = props => {
         labelRule.push({value: ruleId, label: ruleLabel})
         return {minPoint, maxPoint, stepPoint}
     });
+    console.log(rewardPointData)
     const RewardPointMethod =
         <Select options={labelRule}
                 value={labelRule.find(obj => obj.value === selectedValue)}
@@ -93,6 +97,9 @@ const PriceAdjustments = props => {
         SpendingPoint = <Section id={'reward_points'} title={'Spend Your Points'}>
             {RewardPointMethod}
         </Section>
+    }
+    else if(rewardPointData.customer.mp_reward.point_balance == 0){
+        SpendingPoint = null;
     }
     else if(selectedValue == 'rate'){
         SpendingPoint = <Section id={'reward_points'} title={'Spend Your Points'}>

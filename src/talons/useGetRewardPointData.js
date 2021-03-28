@@ -3,7 +3,7 @@ import {useCallback} from 'react'
 import {useUserContext} from '@magento/peregrine/lib/context/user';
 import {
     GET_CUSTOMER_REWARD_POINTS,
-    GET_CUSTOMER_TRANSACTION,
+    GET_CUSTOMER_TRANSACTION, SEND_REFER_EMAIL,
     SET_REWARD_SUBSCRIBE_STATUS
 } from "./rewardPoints.gql";
 import {useHistory} from "react-router-dom";
@@ -22,13 +22,17 @@ export const useGetRewardPointData = () => {
     const {
         data: rewardTransactionData
     } = useQuery(GET_CUSTOMER_TRANSACTION, {variables: {pageSize: 100}, fetchPolicy: "cache-and-network", skip: !isSignedIn})
-    const [mpRewardPoints, {loading: setSubcribeLoading, data: setSubcribeData, error: setSubcribeError }] = useMutation(SET_REWARD_SUBSCRIBE_STATUS)
+    const [mpRewardPoints,
+        {loading: setSubcribeLoading, data: setSubcribeData, error: setSubcribeError }]
+        = useMutation(SET_REWARD_SUBSCRIBE_STATUS)
+    const [mpRewardInvite] = useMutation(SEND_REFER_EMAIL);
     const handleViewAll = useCallback(
         () => {
             history.push('/reward-transaction');
         }
     )
     return {
+        mpRewardInvite,
         handleViewAll,
         mpRewardPoints,
         rewardPointData,

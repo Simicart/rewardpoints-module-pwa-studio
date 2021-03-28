@@ -52,33 +52,18 @@ const GalleryItem = props => {
 
     console.log(item)
     const productLink = resourceUrl(`/${url_key}${url_suffix}`);
-
+    //Reward Point Interface
+    let mp_rewardPoint;
     if(mp_reward.earning_point == 0){
-        return (
-            <div className={classes.root}>
-                <Link to={productLink} className={classes.images}>
-                    <Image
-                        alt={name}
-                        classes={{
-                            image: classes.image,
-                            root: classes.imageContainer
-                        }}
-                        height={IMAGE_HEIGHT}
-                        resource={small_image}
-                        widths={IMAGE_WIDTHS}
-                    />
-                </Link>
-                <Link to={productLink} className={classes.name}>
-                    <span>{name}</span>
-                </Link>
-                <div className={classes.price}>
-                    <Price
-                        value={price.regularPrice.amount.value}
-                        currencyCode={price.regularPrice.amount.currency}
-                    />
-                </div>
+        mp_rewardPoint= null;
+    }
+    else{
+        mp_rewardPoint = <div style={{ fontSize: '1rem', lineHeight: '1rem' }}>
+            {mp_reward_icon && <img src={mp_reward_icon} width="15" height="15" />}
+            <div style={{ marginLeft: 5, display: 'inline-block' }}>
+                <span>Earning <strong style={{color: '#F51231'}}>{mp_reward.earning_point_format}</strong></span>
             </div>
-        );
+        </div>;
     }
     return (
         <div className={classes.root}>
@@ -103,12 +88,7 @@ const GalleryItem = props => {
                     currencyCode={price.regularPrice.amount.currency}
                 />
             </div>
-            <div style={{ fontSize: '1rem', lineHeight: '1rem' }}>
-                {mp_reward_icon && <img src={mp_reward_icon} width="15" height="15" />}
-                <div style={{ marginLeft: 5, display: 'inline-block' }}>
-                    <span>Earning <strong style={{color: '#F51231'}}>{mp_reward.earning_point_format}</strong></span>
-                </div>
-            </div>
+            {mp_rewardPoint}
         </div>
     );
 };

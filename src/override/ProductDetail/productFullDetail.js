@@ -131,132 +131,79 @@ const ProductFullDetail = props => {
             ]);
         }
     }
-
-    function getRule(item){
-        if(item.mp_reward.earning_point ==0){
-            return (
-                <Fragment>
-                    {breadcrumbs}
-                    <Form className={classes.root}>
-                        <section className={classes.title}>
-                            <h1 className={classes.productName}>
-                                {productDetails.name}
-                            </h1>
-                            <p className={classes.productPrice}>
-                                <Price
-                                    currencyCode={productDetails.price.currency}
-                                    value={productDetails.price.value}
-                                />
-                            </p>
-                        </section>
-                        <section className={classes.imageCarousel}>
-                            <Carousel images={mediaGalleryEntries} />
-                        </section>
-                        <FormError
-                            classes={{
-                                root: classes.formErrors
-                            }}
-                            errors={errors.get('form') || []}
-                        />
-                        <section className={classes.options}>{options}</section>
-                        <section className={classes.quantity}>
-                            <h2 className={classes.quantityTitle}>Quantity</h2>
-                            <Quantity
-                                initialValue={quantity}
-                                onValueChange={handleSetQuantity}
-                                message={errors.get('quantity')}
-                            />
-                        </section>
-                        <section className={classes.cartActions}>
-                            <Button
-                                priority="high"
-                                onClick={handleAddToCart}
-                                disabled={isAddToCartDisabled}
-                            >
-                                Add to Cart
-                            </Button>
-                        </section>
-                        <section className={classes.description}>
-                            <h2 className={classes.descriptionTitle}>
-                                Product Description
-                            </h2>
-                            <RichText content={productDetails.description} />
-                        </section>
-                        <section className={classes.details}>
-                            <h2 className={classes.detailsTitle}>SKU</h2>
-                            <strong>{productDetails.sku}</strong>
-                        </section>
-                    </Form>
-                </Fragment>
-            );
-        }
-        return (
-            <Fragment>
-                {breadcrumbs}
-                <Form className={classes.root}>
-                    <section className={classes.title}>
-                        <h1 className={classes.productName}>
-                            {productDetails.name}
-                        </h1>
-                        <p className={classes.productPrice}>
-                            <Price
-                                currencyCode={productDetails.price.currency}
-                                value={productDetails.price.value}
-                            />
-                        </p>
-                    </section>
-                    <section className={classes.imageCarousel}>
-                        <Carousel images={mediaGalleryEntries} />
-                    </section>
-                    <FormError
-                        classes={{
-                            root: classes.formErrors
-                        }}
-                        errors={errors.get('form') || []}
-                    />
-                    <section className={classes.options}>{options}</section>
-                    <section className={classes.quantity}>
-                        <h2 className={classes.quantityTitle}>Quantity</h2>
-                        <Quantity
-                            initialValue={quantity}
-                            onValueChange={handleSetQuantity}
-                            message={errors.get('quantity')}
-                        />
-                    </section>
-                    <div style={{ margin: '0 1.5rem', padding: '1.5rem 1rem', border: '1px solid #95a486', color: '#1240F5' }}>
-                        <img src={rewardPointData.MpRewardIcon.url} width='15' height='15'/>
-                        <span style={{marginLeft: '0.4rem'}}>Earning from <strong style={{color: '#F51231'}}>{item.mp_reward.earning_point_format}</strong> for this item</span>
-                        <br />
-                        <br />
-                        <span style={{marginTop: '0.5rem'}}>Applies only to registered customers, may vary when logged in.</span>
-                    </div>
-                    <section className={classes.cartActions}>
-                        <Button
-                            priority="high"
-                            onClick={handleAddToCart}
-                            disabled={isAddToCartDisabled}
-                        >
-                            Add to Cart
-                        </Button>
-                    </section>
-                    <section className={classes.description}>
-                        <h2 className={classes.descriptionTitle}>
-                            Product Description
-                        </h2>
-                        <RichText content={productDetails.description} />
-                    </section>
-                    <section className={classes.details}>
-                        <h2 className={classes.detailsTitle}>SKU</h2>
-                        <strong>{productDetails.sku}</strong>
-                    </section>
-                </Form>
-            </Fragment>
-        );
-    }
     if (!rewardPointData)
         return ''
-    return rewardPointData.products.items.map(getRule);
-
+    let mp_rewardPoint;
+    rewardPointData.products.items.map((item)=>{
+        if(item.mp_reward.earning_point ==0){
+            mp_rewardPoint = null;
+        }
+        else{
+            mp_rewardPoint = <div style={{ margin: '0 1.5rem', padding: '1.5rem 1rem', border: '1px solid #95a486', color: '#1240F5' }}>
+                <img src={rewardPointData.MpRewardIcon.url} width='15' height='15'/>
+                <span style={{marginLeft: '0.4rem'}}>Earning from <strong style={{color: '#F51231'}}>{item.mp_reward.earning_point_format}</strong> for this item</span>
+                <br />
+                <br />
+                <span style={{marginTop: '0.5rem'}}>Applies only to registered customers, may vary when logged in.</span>
+            </div>;
+        }
+    });
+    return (
+        <Fragment>
+            {breadcrumbs}
+            <Form className={classes.root}>
+                <section className={classes.title}>
+                    <h1 className={classes.productName}>
+                        {productDetails.name}
+                    </h1>
+                    <p className={classes.productPrice}>
+                        <Price
+                            currencyCode={productDetails.price.currency}
+                            value={productDetails.price.value}
+                        />
+                    </p>
+                </section>
+                <section className={classes.imageCarousel}>
+                    <Carousel images={mediaGalleryEntries} />
+                </section>
+                <FormError
+                    classes={{
+                        root: classes.formErrors
+                    }}
+                    errors={errors.get('form') || []}
+                />
+                <section className={classes.options}>{options}</section>
+                <section className={classes.quantity}>
+                    <h2 className={classes.quantityTitle}>Quantity</h2>
+                    <Quantity
+                        initialValue={quantity}
+                        onValueChange={handleSetQuantity}
+                        message={errors.get('quantity')}
+                    />
+                </section>
+                {mp_rewardPoint}
+                <section className={classes.cartActions}>
+                    <Button
+                        priority="high"
+                        onClick={handleAddToCart}
+                        disabled={isAddToCartDisabled}
+                    >
+                        Add to Cart
+                    </Button>
+                </section>
+                <section className={classes.description}>
+                    <h2 className={classes.descriptionTitle}>
+                        Product Description
+                    </h2>
+                    <RichText content={productDetails.description} />
+                </section>
+                <section className={classes.details}>
+                    <h2 className={classes.detailsTitle}>SKU</h2>
+                    <strong>{productDetails.sku}</strong>
+                </section>
+            </Form>
+        </Fragment>
+    );
 };
 
 ProductFullDetail.propTypes = {
