@@ -15,7 +15,7 @@ import {
     getFilterInput
 } from '@magento/peregrine/lib/talons/FilterModal/helpers';
 
-import { GET_CATEGORY } from './category.gql';
+import { GET_CATEGORY } from './category.gql.js';
 import FILTER_INTROSPECTION from '@magento/venia-ui/lib/queries/introspection/filterIntrospectionQuery.graphql';
 
 const Category = props => {
