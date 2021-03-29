@@ -32,7 +32,10 @@ const PriceAdjustments = props => {
         rewardPointData
     } = useGetRewardPointData();
     let minPoint, maxPoint, stepPoint;
-    const [selectedValue, setSelectedValue] = useState('rate');
+    const [selectedValue, setSelectedValue] = useState(localStorage.getItem('myValueInLocalStorage') || '');
+    React.useEffect(() => {
+        localStorage.setItem('myValueInLocalStorage', selectedValue);
+    }, [selectedValue]);
     const handleChange = e => {
         setSelectedValue(e.value);
         if(e.value == 'no_apply'){
@@ -61,7 +64,7 @@ const PriceAdjustments = props => {
     let SpendingPoint;
     const rules = rewardRulePointData.rules;
     const maxRewardPoint = rules.map((rule)=>{
-        if(rule.id == rewardRulePointData.ruleApplied){
+        if(rule.id == selectedValue){
             minPoint = rule.min;
             maxPoint = rule.max;
             stepPoint = rule.step;
